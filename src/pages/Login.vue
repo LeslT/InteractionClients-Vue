@@ -21,7 +21,7 @@
     </v-list-item>
 
     <v-card-actions>
-      <v-btn to="/person" text>Iniciar sesión</v-btn>
+      <v-btn to="/options" text>Iniciar sesión</v-btn>
       <v-btn to="/register" text>Registrarse</v-btn>
     </v-card-actions>
   </v-card>
