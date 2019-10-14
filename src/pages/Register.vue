@@ -59,21 +59,26 @@
             </v-form>
             <v-row justify="center">
               <v-col cols="1" md="6" sm="2">
-                <v-select
-                  v-model="validoHasta"
-                  :menu-props="{ maxHeight: '400' }"
-                  label="Seleccionar"
-                  :items="valido"
-                  item-text="name"
-                  hint="Valido hasta"
-                  persistent-hint
-                ></v-select>
+                <v-menu v-model="menu1" :close-on-content-click="false" max-width="290">
+                  <template v-slot:activator="{ on }">
+                    <v-text-field
+                      :value="computedDateFormattedMomentjs"
+                      clearable
+                      label="Seleccionar"
+                      readonly
+                      v-on="on"
+                      hint="Valido hasta"
+                      persistent-hint
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker v-model="validoHasta" @change="menu1 = false"></v-date-picker>
+                </v-menu>
               </v-col>
             </v-row>
             <v-row justify="center">
               <v-col cols="1" md="6" sm="2">
                 <v-select
-                  v-model="dependence"
+                  v-model="selectedDependencies"
                   :items="dependencies"
                   item-text="name"
                   :menu-props="{ maxHeight: '400' }"
@@ -123,69 +128,110 @@
 </template>
 
 <script>
+import { async } from "q";
+import moment from "moment";
+
 const fb = require("../../firebaseConfig");
 export default {
-    name: "Register",
-    data: function() {
-        return {
-            title: "Registro",
-            names: "",
-            lastnames: "",
-            email: "",
-            password: "",
-            conPassword: "",
-            valido: ["no se","que es","esto"],
-            dependencies: ["dependencia1","dependencia2"],
-            exist:false,
-            activo: false,
+  name: "Register",
+  created() {
+    console.log("sdadada");
+    let dependencies = [];
+    let depNombre = [];
+    fb.dependenciesCollection.get().then(async function(querySnapshot) {
+      await querySnapshot.forEach(function(doc) {
+        dependencies.push(doc.data());
+      });
+      depNombre = await dependencies.map(function(dep) {
+        depNombre.push(dep.nombre);
+      });
+    });
+    console.log(depNombre);
+    this.dependencies = depNombre;
+  },
+  data: function() {
+    return {
+      title: "Registro",
+      names: "",
+      lastnames: "",
+      email: "",
+      password: "",
+      conPassword: "",
+      validoHasta: new Date().toISOString().substr(0, 10),
+      menu1: false,
+      menu2: false,
+      dependencies: [],
+      selectedDependencies: [],
+      exist: false,
+      activo: "false",
 
-            show1: false,
-            show2: true,
-            show3: false,
-            show4: false,
+      show1: false,
+      show2: true,
+      show3: false,
+      show4: false,
 
-            rules: {
-                required: value => !!value || "Required.",
-                min: v => v.length >= 8 || "Min 8 characters",
-                samePassword: value=> value===this.password || "Las contraseñas no coinciden"
-            },
-            nameRules: [
-                names => !!names || "El nombre es requerido",
-                names => names.length > 3 || "El nombre debe ser más largo a 3 caracteres"
-            ],
-            lastnameRules: [
-                lastnames => !!lastnames || "El apellido es requerido",
-                lastnames =>
-                lastnames.length > 3 || "El apellido debe ser más largo a 3 caracteres"
-            ],
-            emailRules:[
-                email => !!email || "El correo es requerido",
-                email => /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/||  "El correo no es valido"
-            ]
-        };
+      rules: {
+        required: value => !!value || "Required.",
+        min: v => v.length >= 8 || "Min 8 characters",
+        samePassword: value =>
+          value === this.password || "Las contraseñas no coinciden"
+      },
+      nameRules: [
+        names => !!names || "El nombre es requerido",
+        names =>
+          names.length > 3 || "El nombre debe ser más largo a 3 caracteres"
+      ],
+      lastnameRules: [
+        lastnames => !!lastnames || "El apellido es requerido",
+        lastnames =>
+          lastnames.length > 3 ||
+          "El apellido debe ser más largo a 3 caracteres"
+      ],
+      emailRules: [
+        email => !!email || "El correo es requerido",
+        email =>
+          /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/ ||
+          "El correo no es valido"
+      ]
+    };
+  },
+  computed: {
+    computedDateFormattedMomentjs() {
+      return this.validoHasta
+        ? moment(this.validoHasta).format("dddd, MMMM Do YYYY")
+        : "";
     },
-    methods: {
+    computedDateFormattedDatefns() {
+      return this.validoHasta
+        ? format(this.validoHasta, "dddd, MMMM Do YYYY")
+        : "";
+    }
+  },
+  methods: {
     registerEvent: function() {
       const userInfo = {
         names: this.names,
         lastnames: this.lastnames,
         email: this.email,
         password: this.password,
-        valido: this.valido,
-        dependencies: this.dependencies,
-        activo: this.activo        
-      }
-        fb.auth.createUserWithEmailAndPassword(this.email,this.password).then(
-          response => {
-          fb.usersCollection.doc(response.user.uid).set(userInfo).then(response => {
-          this.$router.push('/login')
-          })
-          }
-        ); 
-  }},
-}
+        valido: this.validoHasta.toString(),
+        dependencies: this.selectedDependencies,
+        activo: this.activo
+      };
+      fb.auth
+        .createUserWithEmailAndPassword(this.email, this.password)
+        .then(response => {
+          fb.usersCollection
+            .doc(response.user.uid)
+            .set(userInfo)
+            .then(response => {
+              this.$router.push("/login");
+            });
+        });
+    }
+  }
+};
 </script>
 
 <style>
-
 </style>
