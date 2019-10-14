@@ -1,6 +1,7 @@
 <template>
   <div class="principal">
     <div class="form">
+      <v-alert v-if="agregado === true" type="success">Se agregó la nueva dependencia.</v-alert>
       <v-card class="mx-auto" max-width="500" outlined>
         <v-container>
           <v-row justify="center">
@@ -18,19 +19,24 @@
             </v-form>
             <v-row justify="center">
               <v-col cols="1" md="6" sm="2">
-                  <v-text-field v-model="coordinador" :rules="nameRules" label="Coordinador" required></v-text-field>
+                <v-text-field v-model="coordinador" :rules="nameRules" label="Coordinador" required></v-text-field>
               </v-col>
             </v-row>
             <v-row justify="center">
               <v-col cols="1" md="6" sm="2">
-                  <v-text-field v-model="mxmUsers" :rules="nameRules" label="Maximos de usuarios" required></v-text-field>
+                <v-text-field
+                  v-model="mxmUsers"
+                  :rules="nameRules"
+                  label="Maximos de usuarios"
+                  required
+                  type="number"
+                  min="1"
+                ></v-text-field>
               </v-col>
             </v-row>
             <v-row justify="center">
               <v-col cols="1" md="6" sm="2">
-          
-                  <v-text-field v-model="ubication" :rules="nameRules" label="Ubicación" required></v-text-field>
-        
+                <v-text-field v-model="ubication" :rules="nameRules" label="Ubicación" required></v-text-field>
               </v-col>
             </v-row>
             <v-row justify="center">
@@ -72,11 +78,43 @@
 </template>
 
 <script>
-export default {
+import { async } from "q";
+import moment from 'moment'
 
-}
+const fb = require("../../firebaseConfig");
+
+export default {
+    data: () => ({
+      title: "Registro dependencias",
+      names: "",
+      coordinador: "",
+      mxmUsers: "",
+      ubication: "", 
+      activo:"false",
+      agregado: false
+    }),
+    methods: {
+    registerEvent: function() {
+      const depInfo = {
+        nombre: this.names,
+        coordinador: this.coordinador,
+        numeroMaximoUsuarios: this.mxmUsers,
+        ubicacion: this.ubication,
+        activa: this.activo,
+      };
+          fb.dependenciesCollection
+            .doc()
+            .set(depInfo)
+            .then(response => {
+              this.agregado = true;
+            setTimeout(() => {
+              this.$router.push("/options");
+            }, 2000);
+            });
+        }
+    }
+  }
 </script>
 
 <style>
-
 </style>

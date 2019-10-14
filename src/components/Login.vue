@@ -1,5 +1,5 @@
 <!-- Vista del login -->
-<template>
+<template >
   <div>
     <v-container>
       
