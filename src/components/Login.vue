@@ -2,9 +2,15 @@
 <template>
   <div>
     <v-container>
+      
       <v-row justify="center">
-        <v-col cols="1" md="4" sm="3">
-          <v-card class="mx-auto" max-width="344" outlined>
+        <v-col cols="1" md="5" sm="2">
+          <v-card class="mx-auto" max-width="400" outlined>
+            <v-row justify="center">
+              <v-col cols="1" md="4" sm="3">
+                <h1>{{title}}</h1>
+              </v-col>
+            </v-row>
             <v-list-item three-line>
               <v-list-item-content>
                 <v-text-field
@@ -49,6 +55,7 @@ export default {
   name: "Login",
   data: function() {
     return {
+      title: "Inicio",
       show1: false,
       show2: true,
       show3: false,
@@ -68,13 +75,12 @@ export default {
   },
   methods: {
     loginEvent: function() {
-      //fb.auth.createUserWithEmailAndPassword("sarai@hotmail.com", "123456");
       fb.auth
         .signInWithEmailAndPassword(this.email, this.password)
         .then(response => {
           this.$store.commit("setCurrentUser", response.user);
           this.$store.dispatch("fetchUserProfile");
-          this.$router.push("/manageUser");
+          this.$router.push("/options");
         })
         .catch(err => {
           console.log(err);

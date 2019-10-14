@@ -1,9 +1,13 @@
 import Vue from 'vue'
 import Router from  'vue-router'
-import Login from './../pages/Login'
-import Register from './../pages/Register'
-import manageUser from './../pages/manageUser'
-import Options from './../pages/Options'
+import Login from './../components/Login'
+import Register from './../components/Register'
+import manageUser from './../components/manageUser'
+import Options from './../components/Options'
+import manageDependencies from './../components/manageDependencies'
+import listUsers from './../components/listUsers'
+import RegisterD from './../components/RegisterD'
+import editDependency from './../components/editDependency'
 import firebase from 'firebase'
 
 Vue.use(Router)
@@ -13,15 +17,12 @@ const router=new Router({
         {path:'/', component:Login,},
         {path:'/login', component:Login},
         {path: '/register', component: Register},
-        {path: '/manageUser', component: manageUser,
-        meta: {
-            requiresAuth: true
-        }},
-        {path: '/options', component: Options,  
-        meta: {
-            requiresAuth: true
-        }}
-        //OJO... ACA VAN LAS DEMAS RUTAS CON EL ATRIBUTO requiresAuth
+        {path: '/manageUser', component: manageUser, meta: {requiresAuth: true}},
+        {path: '/options', component: Options, meta: { requiresAuth: true}},
+        {path: '/manageDependencies', component: manageDependencies, meta: { requiresAuth: true}},
+        {path: '/listUsers', component: listUsers, meta: { requiresAuth: true}},
+        {path: '/registerD', component: RegisterD, meta: { requiresAuth: true}},
+        {path: '/editDependency', component: editDependency, meta: { requiresAuth: true}},
     ]
 })
 

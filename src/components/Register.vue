@@ -135,7 +135,7 @@ const fb = require("../../firebaseConfig");
 export default {
   name: "Register",
   created() {
-    console.log("sdadada");
+    window.console.log("sdadada");
     let dependencies = [];
     let depNombre = [];
     fb.dependenciesCollection.get().then(async function(querySnapshot) {
@@ -146,7 +146,7 @@ export default {
         depNombre.push(dep.nombre);
       });
     });
-    console.log(depNombre);
+    window.console.log(depNombre);
     this.dependencies = depNombre;
   },
   data: function() {
@@ -189,9 +189,7 @@ export default {
       ],
       emailRules: [
         email => !!email || "El correo es requerido",
-        email =>
-          /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/ ||
-          "El correo no es valido"
+        email => /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/ || "El correo no es valido"
       ]
     };
   },

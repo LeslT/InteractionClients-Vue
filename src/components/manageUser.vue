@@ -1,25 +1,7 @@
 <template>
   <v-container>
     <v-alert v-if="eliminado === true" type="success">Se eliminó el usuario.</v-alert>
-    <v-row justify="left">
-      <v-col cols="1" md="6" sm="3">
-        <v-text-field
-          v-model="search"
-          clearable
-          flat
-          solo-inverted
-          hide-details
-          prepend-inner-icon="search"
-          label="Buscar"
-        ></v-text-field>
-      </v-col>
-      <v-col>
-        <v-btn>Buscar</v-btn>
-        <v-btn to="/register">Añadir</v-btn>
-      </v-col>
-    </v-row>
-
-    <v-row justify="left">
+    <v-row justify="center">
       <v-col cols="1" md="6" sm="3">
         <v-card max-width="444">
           <v-list-item three-line>
@@ -83,11 +65,14 @@
 
           <v-card-actions>
             <v-btn v-on:click="editarUser" text>Editar</v-btn>
+            <v-btn text to="/options">Atrás</v-btn>
             <v-btn
               v-if="this.$store.state.actualUser.uid === this.$store.state.userProfile.uid"
               v-on:click="deleteUser"
               text
+              color="red"
             >Eliminar</v-btn>
+             
           </v-card-actions>
         </v-card>
       </v-col>
