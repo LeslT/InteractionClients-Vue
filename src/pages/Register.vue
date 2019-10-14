@@ -1,5 +1,5 @@
 <template>
-<div class="principal">
+  <div class="principal">
     <div class="form">
       <v-card class="mx-auto" max-width="500" outlined>
         <v-container>
@@ -84,7 +84,7 @@
                 ></v-select>
               </v-col>
             </v-row>
-             <v-row justify="center">
+            <v-row justify="center">
               <v-col cols="1" md="3" sm="1">
                 <p>
                   <v-checkbox
@@ -100,10 +100,18 @@
             </v-row>
             <v-row justify="center">
               <v-col cols="1" md="3" sm="1">
-                <v-btn :disabled="disabledButtonRegister" style="margin:5px;background:#08799C" to="/">Aceptar</v-btn>
+                <v-btn
+                  :disabled="disabledButtonRegister"
+                  style="margin:5px;background:#08799C"
+                  v-on:click="registerEvent"
+                >Aceptar</v-btn>
               </v-col>
               <v-col cols="2" md="3" sm="1">
-                <v-btn :disabled="disabledButtonRegister" style="margin:5px;background:#08799C" to="/">Cancelar</v-btn>
+                <v-btn
+                  :disabled="disabledButtonRegister"
+                  style="margin:5px;background:#08799C"
+                  to="/"
+                >Cancelar</v-btn>
               </v-col>
             </v-row>
           </div>
@@ -112,10 +120,10 @@
       </v-card>
     </div>
   </div>
-
 </template>
 
 <script>
+const fb = require("../../firebaseConfig");
 export default {
     name: "Register",
     data: function() {
@@ -142,22 +150,40 @@ export default {
                 samePassword: value=> value===this.password || "Las contraseñas no coinciden"
             },
             nameRules: [
-                name => !!name || "El nombre es requerido",
-                name => name.length > 3 || "El nombre debe ser más largo a 3 caracteres"
+                names => !!names || "El nombre es requerido",
+                names => names.length > 3 || "El nombre debe ser más largo a 3 caracteres"
             ],
             lastnameRules: [
-                lastname => !!lastname || "El apellido es requerido",
-                lastname =>
-                lastname.length > 3 || "El apellido debe ser más largo a 3 caracteres"
+                lastnames => !!lastnames || "El apellido es requerido",
+                lastnames =>
+                lastnames.length > 3 || "El apellido debe ser más largo a 3 caracteres"
             ],
             emailRules:[
                 email => !!email || "El correo es requerido",
                 email => /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/||  "El correo no es valido"
             ]
         };
-    }
-
-};
+    },
+    methods: {
+    registerEvent: function() {
+      const userInfo = {
+        names: this.names,
+        lastnames: this.lastnames,
+        email: this.email,
+        password: this.password,
+        valido: this.valido,
+        dependencies: this.dependencies,
+        activo: this.activo        
+      }
+        fb.auth.createUserWithEmailAndPassword(this.email,this.password).then(
+          response => {
+          fb.usersCollection.doc(response.user.uid).set(userInfo).then(response => {
+          this.$router.push('/login')
+          })
+          }
+        ); 
+  }},
+}
 </script>
 
 <style>

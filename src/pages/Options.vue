@@ -1,5 +1,5 @@
 <template>
-  
+  <h1>borrar</h1>
 </template>
 
 <script>

@@ -1,55 +1,85 @@
 <!-- Vista del login -->
 <template>
-<div>
-<v-card class="mx-auto" max-width="344" outlined>
-    <v-list-item three-line>
-      <v-list-item-content>
-        <v-text-field v-model="email" :rules="[emailRules, rules.required]" label="Email" required outlined clearable dense></v-text-field>
+  <div>
+    <v-container>
+      <v-row justify="center">
+        <v-col cols="1" md="4" sm="3">
+          <v-card class="mx-auto" max-width="344" outlined>
+            <v-list-item three-line>
+              <v-list-item-content>
+                <v-text-field
+                  v-model="email"
+                  :rules="[emailRules, rules.required]"
+                  label="Email"
+                  required
+                  outlined
+                  clearable
+                  dense
+                ></v-text-field>
 
-        <v-text-field
-          :append-icon="show4 ? 'visibility' : 'visibility_off'"
-          :rules="[rules.required, rules.emailMatch]"
-          :type="show4 ? 'text' : 'password'"
-          v-model="message4"
-          label="Contraseña"
-          outlined
-          clearable
-          dense
-          @click:append="show4 = !show4"
-        ></v-text-field>
-      </v-list-item-content>
-    </v-list-item>
+                <v-text-field
+                  :append-icon="show4 ? 'visibility' : 'visibility_off'"
+                  :rules="[rules.required]"
+                  :type="show4 ? 'text' : 'password'"
+                  v-model="password"
+                  label="Contraseña"
+                  outlined
+                  clearable
+                  dense
+                  @click:append="show4 = !show4"
+                ></v-text-field>
+              </v-list-item-content>
+            </v-list-item>
 
-    <v-card-actions>
-      <v-btn to="/options" text>Iniciar sesión</v-btn>
-      <v-btn to="/register" text>Registrarse</v-btn>
-    </v-card-actions>
-  </v-card>
+            <v-card-actions>
+              <v-btn v-on:click="loginEvent" text>Iniciar sesión</v-btn>
+              <v-btn to="/register" text>Registrarse</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
 <script>
+const fb = require("../../firebaseConfig");
 
 export default {
   name: "Login",
   data: function() {
     return {
-    show1: false,
-    show2: true,
-    show3: false,
-    show4: false,
-    password: "Password",
-      
-      
-    rules: {
-        required: value => !!value || "Este campo es obligatorio.",
-        emailMatch: () => "La identificación o la contraseña no coinciden"
+      show1: false,
+      show2: true,
+      show3: false,
+      show4: false,
+      password: "",
+      email: "",
+      rules: {
+        required: value => !!value || "Este campo es obligatorio."
       },
-    emailRules:[
+      emailRules: [
         email => !!email || "El correo es requerido",
-        email => /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/||  "El correo no es valido"
-        ]
+        email =>
+          /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/ ||
+          "El correo no es valido"
+      ]
     };
+  },
+  methods: {
+    loginEvent: function() {
+      //fb.auth.createUserWithEmailAndPassword("sarai@hotmail.com", "123456");
+      fb.auth
+        .signInWithEmailAndPassword(this.email, this.password)
+        .then(response => {
+          this.$store.commit("setCurrentUser", response.user);
+          this.$store.dispatch("fetchUserProfile");
+          this.$router.push("/manageUser");
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
   }
 };
 </script>
