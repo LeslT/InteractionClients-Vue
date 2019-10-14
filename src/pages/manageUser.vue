@@ -82,8 +82,12 @@
           </v-list-item>
 
           <v-card-actions>
-            <v-btn v-on:click="loginEvent" text>Editar</v-btn>
-            <v-btn v-on:click="deleteUser" text>Eliminar</v-btn>
+            <v-btn v-on:click="editarUser" text>Editar</v-btn>
+            <v-btn
+              v-if="this.$store.state.actualUser.uid === this.$store.state.userProfile.uid"
+              v-on:click="deleteUser"
+              text
+            >Eliminar</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -103,25 +107,30 @@ export default {
     };
   },
   methods: {
-    deleteUser (){
-    fb.usersCollection.doc(fb.auth.currentUser.uid).delete().then(() =>{
-      fb.auth.currentUser.delete().then(()=> {
-      //this.$set (dm this.eliminado = true)
-      this.eliminado = true
-      setTimeout(()=>{
-        this.$router.push("/login");
-      }, 2000);
-    })
-    })
-    
-  }},
+    deleteUser() {
+      fb.usersCollection
+        .doc(fb.auth.currentUser.uid)
+        .delete()
+        .then(() => {
+          fb.auth.currentUser.delete().then(() => {
+            this.eliminado = true;
+            setTimeout(() => {
+              this.$router.push("/login");
+            }, 2000);
+          });
+        });
+    },
+    editarUser() {
+      this.$router.push("/register");
+    }
+  },
   computed: mapState({
-    names: state => state.userProfile.names,
-    lastNames: state => state.userProfile.lastnames,
-    email: state => state.userProfile.email,
-    valido: state => state.userProfile.valido,
-    dependencies: state => state.userProfile.dependencies,
-    activo: state => state.userProfile.activo
+    names: state => state.actualUser.names,
+    lastNames: state => state.actualUser.lastnames,
+    email: state => state.actualUser.email,
+    valido: state => state.actualUser.validoHasta,
+    dependencies: state => state.actualUser.dependencies,
+    activo: state => state.actualUser.activo
   })
 };
 </script>

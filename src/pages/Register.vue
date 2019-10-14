@@ -129,7 +129,7 @@
 
 <script>
 import { async } from "q";
-import moment from "moment";
+import moment from 'moment'
 
 const fb = require("../../firebaseConfig");
 export default {
@@ -197,14 +197,10 @@ export default {
   },
   computed: {
     computedDateFormattedMomentjs() {
-      return this.validoHasta
-        ? moment(this.validoHasta).format("dddd, MMMM Do YYYY")
-        : "";
+      return this.validoHasta ? moment(this.validoHasta).format("dddd, MMMM Do YYYY") : "";
     },
     computedDateFormattedDatefns() {
-      return this.validoHasta
-        ? format(this.validoHasta, "dddd, MMMM Do YYYY")
-        : "";
+      return this.validoHasta ? format(this.validoHasta, "dddd, MMMM Do YYYY") : "";
     }
   },
   methods: {
@@ -214,7 +210,7 @@ export default {
         lastnames: this.lastnames,
         email: this.email,
         password: this.password,
-        valido: this.validoHasta.toString(),
+        validoHasta: this.validoHasta.toString(),
         dependencies: this.selectedDependencies,
         activo: this.activo
       };
