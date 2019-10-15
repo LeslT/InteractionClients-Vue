@@ -1,36 +1,51 @@
 <template>
     <v-container>
-        <v-card max-width="600" class="mx-auto">
+        <v-card max-width="800" class="mx-auto">
             <v-list subheader>
                 <v-subheader>Dependecias</v-subheader>
-                <v-list-item v-for="item in items" :key="item.title" @click="editDependecy()">
+                <v-list-item  v-for="item in this.items" 
+                            :key="item.coordinador" @click="editDependecy()">
                     <v-list-item-content>
-                        <v-list-item-title v-text="item.title"></v-list-item-title>
+                        <v-list-item-title v-text="item.nombre" ></v-list-item-title>
+                         <v-row>
+                             <v-col cols="4" md="12" sm="12">
+                                 <v-list-item-subtitle v-text="' Coordinador: '+item.coordinador + ' - Maximo de Usuarios: ' + item.numeroMaximoUsuarios "></v-list-item-subtitle>
+                             </v-col>
+                        </v-row>
+                        <v-row>
+                             <v-col cols="4" md="12" sm="12">
+                                 <v-list-item-subtitle v-text="'Ubicación: ' + item.ubicacion + ' - Activa: ' + item.activa"></v-list-item-subtitle>
+                             </v-col>
+                        </v-row>
                     </v-list-item-content>
                     <v-list-item-action >
                         <v-btn @click="goToEditDependency()" text> Editar </v-btn>
                         <v-btn @click="deleteDependency()" text> Eliminar </v-btn>
-                    </v-list-item-action>
+                    </v-list-item-action> 
                  </v-list-item>
             </v-list>
             <v-divider></v-divider>
             <v-btn @click="goToRegisterD()" > Agregar dependencia</v-btn>
         </v-card>
-        
-        
     </v-container>
 </template>
-
 <script>
+import { mapState } from "vuex";
+import { async } from "q";
+const fb = require("../../firebaseConfig");
+
 export default {
- data: () => ({
-      items: [
-        { active: true, title: 'Jason Oner', avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg' },
-        { active: true, title: 'Ranee Carlson', avatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg' },
-        { title: 'Cindy Baker', avatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg' },
-        { title: 'Ali Connors', avatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg' },
-      ],
-    }),
+
+ data: function() {
+    return {
+      items: [],
+      depenItems: []
+    };
+  },
+created(){
+    this.datosDependencia();
+
+},
 methods: {
     goToRegisterD(){
         this.$router.push("/registerD");
@@ -39,9 +54,23 @@ methods: {
         this.$router.push("/editDependecy");
     },
     deleteDependency(){
-
-    }
+        
+    },
+    async datosDependencia(){
+        let items = []
+        let depenItems = [];
+        fb.dependenciesCollection.get().then( async querySnapshot => {
+            querySnapshot.forEach(doc => {
+                this.items.push(doc.data())
+            });
+            depenItems = await items.map(function(dep) {
+                depenItems.push(dep.nombre);
+                });
+          });
+            this.items = depenItems;
 }
+},
+
 }
 </script>
 
