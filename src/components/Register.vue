@@ -1,6 +1,7 @@
 <template>
   <div class="principal">
     <div class="form">
+      <v-alert v-if="correoExiste === true" type="error">El correo ya existe.</v-alert>
       <v-card class="mx-auto" max-width="500" outlined>
         <v-container>
           <v-row justify="center">
@@ -164,7 +165,7 @@ export default {
       selectedDependencies: [],
       exist: false,
       activo: "false",
-
+      correoExiste: false,
       show1: false,
       show2: true,
       show3: false,
@@ -221,6 +222,12 @@ export default {
             .then(response => {
               this.$router.push("/login");
             });
+        })
+        .catch(err => {
+          this.correoExiste = true;
+            setTimeout(() => {
+                    this.correoExiste = false;
+                }, 3000);
         });
     }
   }

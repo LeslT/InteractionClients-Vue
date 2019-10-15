@@ -1,6 +1,7 @@
 <template>
     <v-container >
         <v-alert v-if="eliminado === true" type="success">Se eliminó la dependencia.</v-alert>
+        <v-alert v-if="noEliminar === true" type="error">Esta dependecia no se puede eliminar porque contiene usuarios asociados.</v-alert>
          <v-row justify="center">
       <v-col cols="1" md="4" sm="3">
         <h1>{{title}}</h1>
@@ -131,6 +132,7 @@ export default {
     return {
       title: "Gestión de dependencias",
       eliminado: false,
+      noEliminar: false,
       items: [],
       itemsUsers: [],
       depenItems: [],
@@ -157,15 +159,29 @@ methods: {
         this.activoEdit = false;
         this.actualDep = item;
     },
-    deleteDependency(item){   
-        fb.dependenciesCollection.doc(item.id).delete().then(() => {
-            this.eliminado = true;
-            this.datosDependencia()
+    deleteDependency(item){
+    let useritems = [];
+    fb.usersCollection.where("dependencies", "array-contains", item.data.nombre).get().then(async querySnapshot => {
+        await querySnapshot.forEach(doc => {
+            useritems.push(doc.data())
+        });        
+        if (useritems.length == 0) {
+            fb.dependenciesCollection.doc(item.id).delete().then(() => {
+                this.eliminado = true;
+                this.datosDependencia()
+                setTimeout(() => {
+                    this.eliminado = false;
+                }, 2500);
+            })
+        }else{
+          this.noEliminar = true;
             setTimeout(() => {
-                this.eliminado= false;
-            }, 2500);
-        })
-    },
+                    this.noEliminar = false;
+                }, 2500);
+        }
+    });
+
+},
     showUsers: function(item) {
      
         let itemsUsers= []

@@ -2,7 +2,7 @@
 <template >
   <div>
     <v-container>
-      
+      <v-alert v-if="errorCredenciales === true" type="error">El correo o la contraseña no coinciden.</v-alert>
       <v-row justify="center">
         <v-col cols="1" md="5" sm="2">
           <v-card class="mx-auto" max-width="400" outlined>
@@ -57,6 +57,7 @@ export default {
     return {
       title: "Inicio",
       show1: false,
+      errorCredenciales: false,
       show2: true,
       show3: false,
       show4: false,
@@ -83,7 +84,10 @@ export default {
           this.$router.push("/options");
         })
         .catch(err => {
-          console.log(err);
+          this.errorCredenciales = true;
+            setTimeout(() => {
+                    this.errorCredenciales = false;
+                }, 3000);
         });
     }
   }
