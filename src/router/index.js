@@ -7,7 +7,6 @@ import Options from './../components/Options'
 import manageDependencies from './../components/manageDependencies'
 import listUsers from './../components/listUsers'
 import RegisterD from './../components/RegisterD'
-import editDependency from './../components/editDependency'
 import firebase from 'firebase'
 
 Vue.use(Router)
@@ -22,7 +21,6 @@ const router=new Router({
         {path: '/manageDependencies', component: manageDependencies, meta: { requiresAuth: true}},
         {path: '/listUsers', component: listUsers, meta: { requiresAuth: true}},
         {path: '/registerD', component: RegisterD, meta: { requiresAuth: true}},
-        {path: '/editDependency', component: editDependency, meta: { requiresAuth: true}},
     ]
 })
 

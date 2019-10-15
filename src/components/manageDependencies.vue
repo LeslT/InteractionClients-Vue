@@ -1,10 +1,16 @@
 <template>
-    <v-container>
+    <v-container >
         <v-alert v-if="eliminado === true" type="success">Se eliminó la dependencia.</v-alert>
-        <v-row>
+         <v-row justify="center">
+      <v-col cols="1" md="4" sm="3">
+        <h1>{{title}}</h1>
+      </v-col>
+    </v-row>
+        <v-row >
             <v-col>
-            
-        <v-card max-width="800" class="mx-auto">
+        <v-card max-width="800"  id="scroll-target"
+      style="max-height: 400px"
+      class="overflow-y-auto">
             <v-list subheader>
                 <v-subheader>Dependecias</v-subheader>
                 <v-list-item elevation v-for="item in this.items" 
@@ -23,18 +29,19 @@
                         </v-row>
                     </v-list-item-content>
                     <v-list-item-action >
-                        <v-btn @click="showUsers()" text> Ver usuarios</v-btn>
-                        <v-btn @click="goToEditDependency()" text> Editar </v-btn>
+                        <v-btn @click="goToEditDependency(item)" text> Editar </v-btn>
                         <v-btn @click.stop="deleteDependency(item)" text> Eliminar </v-btn>
                     </v-list-item-action> 
                  </v-list-item>
             <v-divider></v-divider>
-            </v-list>
-            <v-btn @click="goToRegisterD()" > Agregar dependencia</v-btn>
+            </v-list> 
         </v-card>
+        <v-btn @click="goToRegisterD()" > Agregar dependencia</v-btn>
         </v-col>
         <v-col>
-        <v-card max-width="800" class="mx-auto">
+        <v-card max-width="800" id="scroll-target"
+      style="max-height: 400px"
+      class="overflow-y-auto">
             <v-list subheader>
                 <v-subheader>Usuarios de la dependencia seleccionada</v-subheader>
                 <v-list-item elevation v-for="item1 in this.itemsUsers" 
@@ -48,6 +55,70 @@
         </v-card>
         </v-col>
          </v-row>
+         <div v-if="!this.activoEdit">
+        <v-card max-width="400" class="mx-auto">
+            <v-subheader>Editar</v-subheader>
+                <div class="registerContent">
+            <v-form ref="form" v-model="valid" lazy-validation>
+              <v-row justify="center">
+                <v-col cols="1" md="6" sm="2">
+                  <input type="text" v-model="actualDep.data.nombre" :rules="nameRules" required>
+                </v-col>
+              </v-row>
+            </v-form>
+            <v-row justify="center">
+              <v-col cols="1" md="6" sm="2">
+                <input v-model="actualDep.data.coordinador" :rules="nameRules" required>
+              </v-col>
+            </v-row>
+            <v-row justify="center">
+              <v-col cols="1" md="6" sm="2">
+                <input
+                  v-model="actualDep.data.numeroMaximoUsuarios"
+                  required
+                  type="number"
+                  min="1"
+                >
+              </v-col>
+            </v-row>
+            <v-row justify="center">
+              <v-col cols="1" md="6" sm="2">
+                <input v-model="actualDep.data.ubicacion" :rules="nameRules" required>
+              </v-col>
+            </v-row>
+            <v-row justify="center">
+              <v-col cols="1" md="3" sm="1">
+                <p>
+                  <v-checkbox
+                    v-model="actualDep.data.activa"
+                    label="Activo"
+                    color="primary"
+                    value="true"
+                    id="enabled"
+                    hide-details
+                  ></v-checkbox>
+                </p>
+              </v-col>
+            </v-row>
+            <v-row justify="center">
+              <v-col cols="1" md="3" sm="1">
+                <v-btn
+                  :disabled="disabledButtonRegister"
+                  style="margin:5px;background:#08799C"
+                  v-on:click="editEvent(actualDep)"
+                >Aceptar</v-btn>
+              </v-col>
+              <v-col cols="2" md="3" sm="1">
+                <v-btn
+                  :disabled="disabledButtonRegister"
+                  style="margin:5px;background:#08799C"
+                  @click="cancelEdit()" 
+                >Cancelar</v-btn>
+              </v-col>
+            </v-row>
+          </div>
+        </v-card>
+         </div>
     </v-container>
 </template>
 <script>
@@ -58,25 +129,35 @@ export default {
 
  data: function() {
     return {
+      title: "Gestión de dependencias",
       eliminado: false,
       items: [],
       itemsUsers: [],
       depenItems: [],
       useritems: [],
+      activoEdit: true,
+      actualDep: Object
     };
   },
 created(){
     this.datosDependencia();
-
 },
 methods: {
+    cancelEdit(){
+        this.activoEdit = true;
+    },
+    editEvent: function(actualDep){
+        fb.dependenciesCollection.doc(actualDep.id).set({nombre: actualDep.data.nombre, coordinador: actualDep.data.coordinador, activa: actualDep.data.activa, numeroMaximoUsuarios: actualDep.data.numeroMaximoUsuarios, ubicacion: actualDep.data.ubicacion})
+        this.activoEdit = true;
+    },
     goToRegisterD(){
         this.$router.push("/registerD");
     },
-    goToEditDependency(){
-        this.$router.push("/editDependecy");
+    goToEditDependency(item){
+        this.activoEdit = false;
+        this.actualDep = item;
     },
-    deleteDependency(item){      
+    deleteDependency(item){   
         fb.dependenciesCollection.doc(item.id).delete().then(() => {
             this.eliminado = true;
             this.datosDependencia()
@@ -99,7 +180,6 @@ methods: {
                 });
           });
             this.itemsUsers = useritems;
-            window.console.log(this.itemsUsers)
     },
     async datosDependencia() {
       let items = [];
