@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from  'vue-router'
-import Login from './../components/Login'
+import index from './../components/index'
 import Register from './../components/Register'
 import manageUser from './../components/manageUser'
 import Options from './../components/Options'
@@ -14,8 +14,8 @@ Vue.use(Router)
 
 const router=new Router({
     routes:[
-        {path:'/', component:Login,},
-        {path:'/login', component:Login},
+        {path:'/', component:index,},
+        {path:'/login', component:index},
         {path: '/register', component: Register},
         {path: '/manageUser', component: manageUser, meta: {requiresAuth: true}},
         {path: '/options', component: Options, meta: { requiresAuth: true}},
